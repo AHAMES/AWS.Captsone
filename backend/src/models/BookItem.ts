@@ -1,9 +1,7 @@
-export interface TodoItem {
-  userId: string
+export interface BookItem {
   bookId: string
   name: string
   authorId: string
-  obtained: boolean
   createdAt: string
   releaseDate: string
   attachmentUrl?: string

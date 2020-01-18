@@ -23,6 +23,10 @@ provider:
     AUTHORS_S3_BUCKET: ahs-BookApp-Authors-Bucket-${self:provider.stage}
     AUTHORS_ID_INDEX: AuthorIdIndex
 
+    BOOKS_TABLE: ahs-BookApp-Books-${self:provider.stage}
+    BOOKS_S3_BUCKET: ahs-BookApp-Books-Bucket-${self:provider.stage}
+    BOOKS_ID_INDEX: BookIdIndex
+
     BUCKET_REGION: ${self:provider.region}
     SIGNED_URL_EXPIRATION: 300
   iamRoleStatements:
@@ -126,6 +130,27 @@ functions:
           - dynamodb:UpdateItem
         Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.AUTHORS_TABLE}
 
+  CreateAuthor:
+    handler: src/lambda/http/createBook.handler
+    events:
+      - http:
+          method: post
+          path: books
+          authorizer: Auth
+          cors: true
+          reqValidatorName: RequestBodyValidator
+          documentation:
+            summary: Creates book
+            description: Creates book
+            requestModels:
+              'application/json': AuthorRequest
+    iamRoleStatementsInherit: true
+    iamRoleStatements:
+      - Effect: Allow
+        Action:
+          - dynamodb:PutItem
+        Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.AUTHORS_TABLE}
+
   GenerateUploadUrl:
     handler: src/lambda/http/generateUploadUrl.handler
     events:
@@ -165,7 +190,28 @@ resources:
                 KeyType: HASH
             Projection:
               ProjectionType: ALL
-
+    BookDynamoDBTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        AttributeDefinitions:
+          - AttributeName: authorId
+            AttributeType: S
+          - AttributeName: bookId
+            AttributeType: S
+        KeySchema:
+          - AttributeName: authorId
+            KeyType: HASH
+          - AttributeName: bookId
+            KeyType: RANGE
+        BillingMode: PAY_PER_REQUEST
+        TableName: ${self:provider.environment.BOOKS_TABLE}
+        GlobalSecondaryIndexes:
+          - IndexName: ${self:provider.environment.BOOKS_ID_INDEX}
+            KeySchema:
+              - AttributeName: authorId
+                KeyType: HASH
+            Projection:
+              ProjectionType: ALL
     RequestBodyValidator:
       Type: AWS::ApiGateway::RequestValidator
       Properties:
