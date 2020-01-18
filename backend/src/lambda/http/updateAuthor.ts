@@ -6,14 +6,33 @@ import {
   APIGatewayProxyResult
 } from 'aws-lambda'
 
-//import { UpdateBookRequest } from '../../requests/UpdateBookRequest'
+import { UpdateAuthorRequest } from '../../requests/UpdateAuthorRequest'
+import { updateAuthor } from '../../businessLogic/Authors'
+import { createLogger } from '../../utils/logger'
+const logger = createLogger('update todo endpoint')
 
 export const handler: APIGatewayProxyHandler = async (
   event: APIGatewayProxyEvent
 ): Promise<APIGatewayProxyResult> => {
-  //const bookId = event.pathParameters.bookId
-  //const updatedBook: UpdateBookRequest = JSON.parse(event.body)
   console.log(event)
-  // TODO: Update a TODO item with the provided id using values in the "updatedTodo" object
-  return undefined
+  const authorId = event.pathParameters.authorId
+  const updatedTodo: UpdateAuthorRequest = JSON.parse(event.body)
+
+  logger.info('attempting to update an item', updatedTodo)
+  await updateAuthor(
+    {
+      name: updatedTodo.name
+    },
+    authorId
+  )
+  logger.info('updated item', { authorId })
+  return {
+    statusCode: 204,
+    headers: {
+      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Credentials': true,
+      'Access-Control-Allow-Methods': 'GET, PUT, POST, DELETE, HEAD'
+    },
+    body: ''
+  }
 }

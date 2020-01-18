@@ -26,7 +26,6 @@ provider:
     BUCKET_REGION: ${self:provider.region}
     SIGNED_URL_EXPIRATION: 300
   iamRoleStatements:
-
     - Effect: Allow
       Action:
         - xray:PutTraceSegments
@@ -47,6 +46,9 @@ custom:
       - name: AuthorRequest
         contentType: application/json
         schema: ${file(models/create-author-request.json)}
+      - name: AuthorUpdateRequest
+        contentType: application/json
+        schema: ${file(models/update-author-request.json)}
 
 functions:
   Auth:
@@ -71,6 +73,57 @@ functions:
       - Effect: Allow
         Action:
           - dynamodb:PutItem
+        Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.AUTHORS_TABLE}
+
+  GetAuthors:
+    handler: src/lambda/http/getAuthors.handler
+    events:
+      - http:
+          method: get
+          path: authors
+          cors: true
+    iamRoleStatementsInherit: true
+    iamRoleStatements:
+      - Effect: Allow
+        Action:
+          - dynamodb:Scan
+          - dynamodb:Query
+        Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.AUTHORS_TABLE}
+
+  GetAuthor:
+    handler: src/lambda/http/getAuthor.handler
+    events:
+      - http:
+          method: get
+          path: authors/{authorId}
+          cors: true
+    iamRoleStatementsInherit: true
+    iamRoleStatements:
+      - Effect: Allow
+        Action:
+          - dynamodb:Scan
+          - dynamodb:Query
+        Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.AUTHORS_TABLE}
+
+  UpdateAuthor:
+    handler: src/lambda/http/updateAuthor.handler
+    events:
+      - http:
+          method: patch
+          path: authors/{authorId}
+          authorizer: Auth
+          cors: true
+          reqValidatorName: RequestBodyValidator
+          documentation:
+            summary: Update author
+            description: Update a author item
+            requestModels:
+              'application/json': AuthorUpdateRequest
+    iamRoleStatementsInherit: true
+    iamRoleStatements:
+      - Effect: Allow
+        Action:
+          - dynamodb:UpdateItem
         Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.AUTHORS_TABLE}
 
   GenerateUploadUrl:
