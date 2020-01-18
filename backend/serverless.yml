@@ -1,0 +1,123 @@
+service:
+  name: Book-library-app
+
+plugins:
+  - serverless-webpack
+  - serverless-iam-roles-per-function
+  - serverless-reqvalidator-plugin
+  - serverless-aws-documentation
+
+provider:
+  name: aws
+  runtime: nodejs12.x
+
+  stage: ${opt:stage, 'dev'}
+  region: ${opt:region, 'us-east-1'}
+
+  tracing:
+    lambda: true
+    apiGateway: true
+
+  environment:
+    AUTHORS_TABLE: ahs-BookApp-Authors-${self:provider.stage}
+    AUTHORS_S3_BUCKET: ahs-BookApp-Authors-Bucket-${self:provider.stage}
+    AUTHORS_ID_INDEX: AuthorIdIndex
+
+    BUCKET_REGION: ${self:provider.region}
+    SIGNED_URL_EXPIRATION: 300
+  iamRoleStatements:
+
+    - Effect: Allow
+      Action:
+        - xray:PutTraceSegments
+      Resource:
+        - '*'
+
+custom:
+  webpack:
+    webpackConfig: ./webpack.config.js
+    includeModules: true
+  documentation:
+    api:
+      info:
+        version: v1.0.0
+        title: Book Library API
+        description: Serverless app that keeps record of books and their authors
+    models:
+      - name: AuthorRequest
+        contentType: application/json
+        schema: ${file(models/create-author-request.json)}
+
+functions:
+  Auth:
+    handler: src/lambda/auth/auth0Authorizer.handler
+
+  CreateAuthor:
+    handler: src/lambda/http/createAuthor.handler
+    events:
+      - http:
+          method: post
+          path: authors
+          authorizer: Auth
+          cors: true
+          reqValidatorName: RequestBodyValidator
+          documentation:
+            summary: Creates Author
+            description: Creates Author
+            requestModels:
+              'application/json': AuthorRequest
+    iamRoleStatementsInherit: true
+    iamRoleStatements:
+      - Effect: Allow
+        Action:
+          - dynamodb:PutItem
+        Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.AUTHORS_TABLE}
+
+  GenerateUploadUrl:
+    handler: src/lambda/http/generateUploadUrl.handler
+    events:
+      - http:
+          method: post
+          path: commons/{itemId}/attachment
+
+resources:
+  Resources:
+    GatewayResponseDefault4XX:
+      Type: AWS::ApiGateway::GatewayResponse
+      Properties:
+        ResponseParameters:
+          gatewayresponse.header.Access-Control-Allow-Origin: "'*'"
+          gatewayresponse.header.Access-Control-Allow-Headers: "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'"
+          gatewayresponse.header.Access-Control-Allow-Methods: "'GET,OPTIONS,POST'"
+        ResponseType: DEFAULT_4XX
+        RestApiId:
+          Ref: ApiGatewayRestApi
+
+    AuthorDynamoDBTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        AttributeDefinitions:
+          - AttributeName: authorId
+            AttributeType: S
+
+        KeySchema:
+          - AttributeName: authorId
+            KeyType: HASH
+        BillingMode: PAY_PER_REQUEST
+        TableName: ${self:provider.environment.AUTHORS_TABLE}
+        GlobalSecondaryIndexes:
+          - IndexName: ${self:provider.environment.AUTHORS_ID_INDEX}
+            KeySchema:
+              - AttributeName: authorId
+                KeyType: HASH
+            Projection:
+              ProjectionType: ALL
+
+    RequestBodyValidator:
+      Type: AWS::ApiGateway::RequestValidator
+      Properties:
+        Name: 'request-body-validator'
+        RestApiId:
+          Ref: ApiGatewayRestApi
+        ValidateRequestBody: true
+        ValidateRequestParameters: false
