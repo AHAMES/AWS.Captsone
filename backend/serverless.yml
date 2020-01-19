@@ -160,6 +160,55 @@ functions:
           - dynamodb:Query
         Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.AUTHORS_TABLE}
 
+  GetBooks:
+    handler: src/lambda/http/getBooks.handler
+    events:
+      - http:
+          method: get
+          path: books
+          cors: true
+    iamRoleStatementsInherit: true
+    iamRoleStatements:
+      - Effect: Allow
+        Action:
+          - dynamodb:Scan
+          - dynamodb:Query
+        Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.BOOKS_TABLE}
+
+  GetBook:
+    handler: src/lambda/http/getBooks.handler
+    events:
+      - http:
+          method: get
+          path: books/{bookId}
+          cors: true
+    iamRoleStatementsInherit: true
+    iamRoleStatements:
+      - Effect: Allow
+        Action:
+          - dynamodb:Scan
+          - dynamodb:Query
+        Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.BOOKS_TABLE}
+
+  GetBookOfAuthor:
+    handler: src/lambda/http/getBookByAuthor.handler
+    events:
+      - http:
+          method: get
+          path: books/{authorId}
+          cors: true
+    iamRoleStatementsInherit: true
+    iamRoleStatements:
+      - Effect: Allow
+        Action:
+          - dynamodb:Scan
+          - dynamodb:Query
+        Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.BOOKS_TABLE}
+      - Effect: Allow
+        Action:
+          - dynamodb:Scan
+          - dynamodb:Query
+        Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.AUTHORS_TABLE}
   GenerateUploadUrl:
     handler: src/lambda/http/generateUploadUrl.handler
     events:
