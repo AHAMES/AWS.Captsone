@@ -5,4 +5,5 @@ export interface CreateBookRequest {
   name: string
   authorId: string
   releaseDate: string
+  genre: string
 }

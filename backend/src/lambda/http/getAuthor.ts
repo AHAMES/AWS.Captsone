@@ -13,7 +13,7 @@ const logger = createLogger('Get All Authors')
 export const handler: APIGatewayProxyHandler = async (
   event: APIGatewayProxyEvent
 ): Promise<APIGatewayProxyResult> => {
-  logger.info('getting all authors')
+  logger.info('getting specific author')
 
   const authorId = event.pathParameters.authorId
   const AuthorItems: AuthorItem = await getAuthor(authorId)

@@ -12,14 +12,14 @@ export class BooksAccess {
   constructor(
     private readonly docClient: DocumentClient = createDynamoDBClient(),
     private readonly booksTable = process.env.BOOKS_TABLE,
-    private readonly booksBucketName = process.env.Books_S3_BUCKET //private readonly expires = process.env.SIGNED_URL_EXPIRATION, //private readonly thumbnailBucketName = process.env.THUMBNAILS_S3_BUCKET, //private readonly region = process.env.BUCKET_REGION
+    private readonly booksBucketName = process.env.BOOKS_S3_BUCKET //private readonly expires = process.env.SIGNED_URL_EXPIRATION, //private readonly thumbnailBucketName = process.env.THUMBNAILS_S3_BUCKET, //private readonly region = process.env.BUCKET_REGION
   ) {}
 
   async createBook(book: BookItem): Promise<BookItem> {
-    book.attachmentUrl = `https://${this.booksBucketName}.s3.amazonaws.com/${book.authorId}`
+    book.attachmentUrl = `https://${this.booksBucketName}.s3.amazonaws.com/${book.bookId}`
     logger.info(
       'createAuthor: AuthorID ' +
-        book.authorId +
+        book.bookId +
         ' attempting to create book for Author'
     )
     await this.docClient
@@ -30,6 +30,60 @@ export class BooksAccess {
       .promise()
     logger.info('item created', book)
     return book
+  }
+
+  async getBooks(): Promise<BookItem[]> {
+    var params = {
+      TableName: this.booksTable,
+      ProjectionExpression:
+        'bookId,authorId, createdAt, #name,genre,releaseDate, attachmentUrl',
+
+      ExpressionAttributeNames: {
+        '#name': 'name'
+      }
+    }
+    const result = await this.docClient.scan(params).promise()
+    const items = result.Items
+    logger.info('getBooks', { items })
+    return items as BookItem[]
+  }
+
+  async getBook(bookId: string): Promise<BookItem> {
+    var params = {
+      TableName: this.booksTable,
+      KeyConditionExpression: 'bookId = :bookId',
+
+      ExpressionAttributeValues: {
+        ':bookId': bookId
+      }
+    }
+
+    logger.info('getBook: bookId' + bookId + ' attempting to retreive book')
+    const result = await this.docClient.query(params).promise()
+    const items = result.Items
+    logger.info('Get Book', { items })
+    return items[0] as BookItem
+  }
+
+  async getBookByAuthor(authorId: string): Promise<BookItem[]> {
+    var params = {
+      TableName: this.booksTable,
+      KeyConditionExpression: 'authorId = :authorId',
+
+      ExpressionAttributeValues: {
+        ':authorId': authorId
+      }
+    }
+
+    logger.info(
+      'getBookByAuthor: authorId' +
+        authorId +
+        ' attempting to retreive books by author'
+    )
+    const result = await this.docClient.query(params).promise()
+    const items = result.Items
+    logger.info('Get Book', { items })
+    return items[0] as BookItem[]
   }
 }
 

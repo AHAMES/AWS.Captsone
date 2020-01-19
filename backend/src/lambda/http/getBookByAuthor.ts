@@ -6,16 +6,17 @@ import {
   APIGatewayProxyHandler
 } from 'aws-lambda'
 
-import { getBooks } from '../../businessLogic/Books'
+import { getBookByAuthor } from '../../businessLogic/Books'
 import { BookItem } from '../../models/BookItem'
 import { createLogger } from '../../utils/logger'
-const logger = createLogger('Get All Books')
+const logger = createLogger('Get All Authors')
 export const handler: APIGatewayProxyHandler = async (
   event: APIGatewayProxyEvent
 ): Promise<APIGatewayProxyResult> => {
-  logger.info('getting all Books')
+  logger.info('getting specific author')
 
-  const BookItems: BookItem[] = await getBooks()
+  const authorId = event.pathParameters.authorId
+  const BookItems: BookItem[] = await getBookByAuthor(authorId)
   const items = JSON.parse(JSON.stringify(BookItems))
   console.log(event)
   return {

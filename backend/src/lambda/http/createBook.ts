@@ -17,12 +17,14 @@ export const handler: APIGatewayProxyHandler = async (
 ): Promise<APIGatewayProxyResult> => {
   const newBook: CreateBookRequest = JSON.parse(event.body)
   logger.info('Attempting to create books')
+
   const ItemDetails: BookItem = {
     bookId: '',
     authorId: newBook.authorId,
     name: newBook.name,
     releaseDate: newBook.releaseDate,
     createdAt: new Date().toISOString(),
+    genre: newBook.genre,
     attachmentUrl: ''
   }
   const newItem: BookItem = await createBook(ItemDetails)
