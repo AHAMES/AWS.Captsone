@@ -1,0 +1,13 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema",
+  "title": "review",
+  "type": "object",
+  "properties": {
+    "bookId": {
+      "type": "string"
+    },
+    "reviewRate": { "type": "integer" }
+  },
+  "required": ["bookId", "reviewRate"],
+  "additionalProperties": false
+}

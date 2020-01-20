@@ -1,12 +1,9 @@
 {
   "$schema": "http://json-schema.org/draft-04/schema",
-  "title": "Book",
+  "title": "Author",
   "type": "object",
   "properties": {
     "name": {
-      "type": "string"
-    },
-    "authorId": {
       "type": "string"
     },
     "releaseDate": {
@@ -16,6 +13,6 @@
       "type": "string"
     }
   },
-  "required": ["name", "authorId", "releaseDate"],
+  "required": ["name", "releaseDate"],
   "additionalProperties": false
 }
