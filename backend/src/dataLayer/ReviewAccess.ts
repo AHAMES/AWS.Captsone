@@ -15,9 +15,9 @@ export class ReviewAccess {
   ) {}
   async createReview(review: UserReviewItem): Promise<UserReviewItem> {
     logger.info(
-      'createAuthor: AuthorID ' +
+      'createReview: BookId ' +
         review.bookId +
-        ' attempting to create book for Author'
+        ' attempting to create review for Book'
     )
     await this.docClient
       .put({
@@ -26,7 +26,49 @@ export class ReviewAccess {
       })
       .promise()
     logger.info('item created', review)
-    return review
+    return review[0] as UserReviewItem
+  }
+
+  async getReview(bookId, userId) {
+    logger.info(
+      'getReview: BookID ' +
+        bookId +
+        ' attempting to create a review for the book'
+    )
+
+    const params = {
+      TableName: this.userTableName,
+      KeyConditionExpression: 'userId = :userId and bookId = :bookId',
+
+      ExpressionAttributeValues: {
+        ':userId': userId,
+        ':bookId': bookId
+      }
+    }
+    const review = await this.docClient.query(params).promise()
+    logger.info('item created', review)
+    return review[0] as UserReviewItem
+  }
+
+  async deleteReview(bookId, userId) {
+    logger.info(
+      'DeleteReview: BookID ' +
+        bookId +
+        ' attempting to create a review for the book'
+    )
+
+    const params = {
+      TableName: this.userTableName,
+      Key: {
+        Key: {
+          bookId: bookId,
+          userId: userId
+        }
+      }
+    }
+    const review = await this.docClient.delete(params).promise()
+    logger.info('item created', review)
+    return review[0] as UserReviewItem
   }
 }
 function createDynamoDBClient() {

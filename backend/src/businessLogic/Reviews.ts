@@ -20,7 +20,44 @@ export async function createReview(
   }
   const userId = parseUserId(jwkToken)
   logger.info('CreateReview: CheckuserID ' + userId)
+
+  const review = reviewAccess.getReview(newItem.bookId, userId)
+  if (review != null) {
+    return {
+      bookId: newItem.bookId,
+      reviewRate: (await review).reviewRate,
+      userId: userId,
+      createdAt: 'X'
+    }
+  }
   newItem.userId = userId
   logger.info('CreateReview attempting to create a review')
   return await reviewAccess.createReview(newItem)
+}
+
+export async function deleteReview(bookId, jwkToken) {
+  const book = await booksAccess.getBook(bookId)
+  if (book == null) {
+    return null
+  }
+  const userId = parseUserId(jwkToken)
+  logger.info('getReview: CheckuserID ' + userId)
+
+  const review = await reviewAccess.getReview(bookId, userId)
+  if (review == null) {
+    return null
+  }
+  return await reviewAccess.deleteReview(bookId, userId)
+}
+
+export async function getReview(bookId, jwkToken) {
+  const book = await booksAccess.getBook(bookId)
+  if (book == null) {
+    return null
+  }
+
+  const userId = parseUserId(jwkToken)
+  logger.info('getReview: CheckuserID ' + userId)
+
+  return await reviewAccess.getReview(bookId, userId)
 }
