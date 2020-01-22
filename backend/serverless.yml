@@ -1,6 +1,7 @@
 service:
   name: Book-library-app
-
+package:
+  individually: true
 plugins:
   - serverless-webpack
   - serverless-iam-roles-per-function
@@ -407,7 +408,7 @@ functions:
         Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.BOOKS_TABLE}/index/${self:provider.environment.BOOKS_ID_INDEX}
       - Effect: Allow
         Action:
-          - dynamodb:UpdateItem 
+          - dynamodb:UpdateItem
           - dynamodb:Query
         Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.USER_REVIEW_TABLE}
 
