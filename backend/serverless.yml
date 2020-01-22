@@ -1,7 +1,6 @@
 service:
   name: Book-library-app
-package:
-  individually: true
+
 plugins:
   - serverless-webpack
   - serverless-iam-roles-per-function

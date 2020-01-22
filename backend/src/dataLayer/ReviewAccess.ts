@@ -26,7 +26,7 @@ export class ReviewAccess {
         Item: review
       })
       .promise()
-    logger.info('item created', review)
+    logger.info('item created', { review })
     return review[0] as UserReviewItem
   }
 
@@ -57,7 +57,7 @@ export class ReviewAccess {
     }
 
     const review = await this.docClient.query(params).promise()
-    logger.info('items found', review)
+    logger.info('items found', { review })
     return review.Items as UserReviewItem[]
   }
 
@@ -76,7 +76,7 @@ export class ReviewAccess {
       }
     }
     const review = await (await this.docClient.query(params).promise()).Items
-    logger.info('item found', review)
+    logger.info('item found', { review })
     return review[0] as UserReviewItem
   }
   async updateReview(bookId, userId, reviewRate) {
@@ -93,7 +93,7 @@ export class ReviewAccess {
       }
     }
     await this.docClient.update(params).promise()
-    logger.info('updated Author', reviewRate)
+    logger.info('updated Author', { reviewRate })
     return 200
   }
   async deleteReview(bookId, userId) {
@@ -113,7 +113,7 @@ export class ReviewAccess {
       }
     }
     const review = await this.docClient.delete(params).promise()
-    logger.info('item created', review)
+    logger.info('item deleted', { review })
     return 200
   }
 }

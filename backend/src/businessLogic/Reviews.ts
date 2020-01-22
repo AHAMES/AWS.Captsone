@@ -4,7 +4,7 @@ import { BooksAccess } from '../dataLayer/BooksAccess'
 //import { AuthorsAccess } from '../dataLayer/AuthorsAccess'
 import { ReviewAccess } from '../dataLayer/ReviewAccess'
 import { parseUserId } from '../auth/utils'
-const logger = createLogger('Books BLL')
+const logger = createLogger('Review BLL')
 
 //const authorsAccess = new AuthorsAccess()
 const booksAccess = new BooksAccess()
@@ -17,22 +17,25 @@ export async function createReview(
   const book = await booksAccess.getBook(newItem.bookId)
   if (book == null) {
     return null
-  }
-  const userId = parseUserId(jwkToken)
-  logger.info('CreateReview: CheckuserID ' + userId)
+  } else {
+    const userId = parseUserId(jwkToken)
+    logger.info('CreateReview: CheckuserID ' + userId)
 
-  const review = reviewAccess.getReview(newItem.bookId, userId)
-  if (review != null) {
-    return {
-      bookId: newItem.bookId,
-      reviewRate: -1,
-      userId: userId,
-      createdAt: 'X'
+    const review = reviewAccess.getReview(newItem.bookId, userId)
+    logger.info('CreateReview: check if exists ', { review })
+    if (Object.keys(review).length != 0) {
+      return {
+        bookId: newItem.bookId,
+        reviewRate: -1,
+        userId: userId,
+        createdAt: 'X'
+      }
+    } else {
+      newItem.userId = userId
+      logger.info('CreateReview attempting to create a review')
+      return await reviewAccess.createReview(newItem)
     }
   }
-  newItem.userId = userId
-  logger.info('CreateReview attempting to create a review')
-  return await reviewAccess.createReview(newItem)
 }
 
 export async function deleteReview(bookId, jwkToken) {
