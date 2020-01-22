@@ -313,7 +313,7 @@ functions:
           - dynamodb:Query
         Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.BOOKS_TABLE}/index/${self:provider.environment.BOOKS_ID_INDEX}
   getReview:
-    handler: src/lambda/http/deleteReview.handler
+    handler: src/lambda/http/getReview.handler
     events:
       - http:
           method: get
@@ -337,6 +337,79 @@ functions:
           - dynamodb:Scan
           - dynamodb:Query
         Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.BOOKS_TABLE}/index/${self:provider.environment.BOOKS_ID_INDEX}
+
+  getUserReviews:
+    handler: src/lambda/http/getAllUserReviews.handler
+    events:
+      - http:
+          method: get
+          path: userReview/all
+          authorizer: Auth
+          cors: true
+    iamRoleStatementsInherit: true
+    iamRoleStatements:
+      - Effect: Allow
+        Action:
+          - dynamodb:Query
+        Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.USER_REVIEW_TABLE}
+
+  getBookReviews:
+    handler: src/lambda/http/getAllBookReviews.handler
+    events:
+      - http:
+          method: get
+          path: userReview/all/{bookId}
+          authorizer: Auth
+          cors: true
+    iamRoleStatementsInherit: true
+    iamRoleStatements:
+      - Effect: Allow
+        Action:
+          - dynamodb:Query
+        Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.USER_REVIEW_TABLE}
+
+      - Effect: Allow
+        Action:
+          - dynamodb:Scan
+          - dynamodb:Query
+        Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.BOOKS_TABLE}
+      - Effect: Allow
+        Action:
+          - dynamodb:Scan
+          - dynamodb:Query
+        Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.USER_REVIEW_TABLE}/index/${self:provider.environment.USER_ID_INDEX}
+      - Effect: Allow
+        Action:
+          - dynamodb:Scan
+          - dynamodb:Query
+        Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.BOOKS_TABLE}/index/${self:provider.environment.BOOKS_ID_INDEX}
+
+  UpdateReview:
+    handler: src/lambda/http/updateReview.handler
+    events:
+      - http:
+          method: patch
+          path: userReview/{bookId}
+          authorizer: Auth
+          cors: true
+
+    iamRoleStatementsInherit: true
+    iamRoleStatements:
+      - Effect: Allow
+        Action:
+          - dynamodb:UpdateItem
+          - dynamodb:Query
+        Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.BOOKS_TABLE}
+      - Effect: Allow
+        Action:
+          - dynamodb:Scan
+          - dynamodb:Query
+        Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.BOOKS_TABLE}/index/${self:provider.environment.BOOKS_ID_INDEX}
+      - Effect: Allow
+        Action:
+          - dynamodb:UpdateItem 
+          - dynamodb:Query
+        Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.USER_REVIEW_TABLE}
 
   GenerateUploadUrl:
     handler: src/lambda/http/generateUploadUrl.handler

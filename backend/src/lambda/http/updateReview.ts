@@ -5,24 +5,25 @@ import {
   APIGatewayProxyHandler,
   APIGatewayProxyResult
 } from 'aws-lambda'
-
+import { updateReview } from '../../businessLogic/Reviews'
 import { createLogger } from '../../utils/logger'
-import { getReview } from '../../businessLogic/Reviews'
-const logger = createLogger('getReview')
+const logger = createLogger('updateReview endpoint')
+
 export const handler: APIGatewayProxyHandler = async (
   event: APIGatewayProxyEvent
 ): Promise<APIGatewayProxyResult> => {
+  console.log(event)
+  const bookId = event.pathParameters.bookId
   const authorization = event.headers.Authorization
+  const reviewRate: number = JSON.parse(event.body).reviewRate
   const split = authorization.split(' ')
   const jwtToken = split[1]
+  logger.info('attempting to update a review')
+  const res = await updateReview(bookId, jwtToken, reviewRate)
 
-  const bookId = event.pathParameters.bookId
-  logger.info('Attempting to delete a review')
-
-  const newItem = await getReview(bookId, jwtToken)
-  if (newItem == null) {
+  if (res == null) {
     logger.info(
-      'fetching failed, user review for this book or the book does not exist'
+      'creation failed, user review for this book or the book does not exist'
     )
 
     return {
@@ -32,20 +33,18 @@ export const handler: APIGatewayProxyHandler = async (
         'Access-Control-Allow-Credentials': true
       },
       body: JSON.stringify({
-        item: newItem
+        item: ''
       })
     }
   }
-  logger.info('created Item', newItem)
+  logger.info('updated item', { bookId })
   return {
-    statusCode: 201,
+    statusCode: 204,
     headers: {
       'Access-Control-Allow-Origin': '*',
-      'Access-Control-Allow-Credentials': true
+      'Access-Control-Allow-Credentials': true,
+      'Access-Control-Allow-Methods': 'GET, PUT, POST, DELETE, HEAD'
     },
-    body: JSON.stringify({
-      item: newItem
-    })
+    body: ''
   }
-  return undefined
 }

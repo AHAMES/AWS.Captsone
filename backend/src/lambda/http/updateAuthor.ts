@@ -9,7 +9,7 @@ import {
 import { UpdateAuthorRequest } from '../../requests/UpdateAuthorRequest'
 import { updateAuthor } from '../../businessLogic/Authors'
 import { createLogger } from '../../utils/logger'
-const logger = createLogger('update todo endpoint')
+const logger = createLogger('updateAuthor endpoint')
 
 export const handler: APIGatewayProxyHandler = async (
   event: APIGatewayProxyEvent
