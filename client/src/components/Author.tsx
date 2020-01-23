@@ -149,12 +149,17 @@ export class Author extends React.PureComponent<AuthorsProps, AuthorsState> {
           return (
             <Grid.Row key={author.authorId}>
               <Grid.Column width={1} verticalAlign="middle">
-                <Checkbox onChange={() => this.onAuthorCheck(pos)} />
+                <Checkbox
+                  onChange={() => this.onAuthorCheck(pos)}
+                  //checked={}
+                />
               </Grid.Column>
               <Grid.Column width={10} verticalAlign="middle">
                 {author.name}
               </Grid.Column>
-
+              {/*<Grid.Column width={3} floated="right">
+                {.dueDate}
+              </Grid.Column>*/}
               <Grid.Column width={1} floated="right">
                 <Button
                   icon
@@ -164,7 +169,15 @@ export class Author extends React.PureComponent<AuthorsProps, AuthorsState> {
                   <Icon name="pencil" />
                 </Button>
               </Grid.Column>
-
+              <Grid.Column width={1} floated="right">
+                <Button
+                  icon
+                  color="green"
+                  //onClick={() => this.onTodoDelete(todo.todoId)}
+                >
+                  <Icon name="book" />
+                </Button>
+              </Grid.Column>
               {author.attachmentUrl && (
                 <Image src={author.attachmentUrl} size="small" wrapped />
               )}

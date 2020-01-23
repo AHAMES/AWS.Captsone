@@ -17,6 +17,22 @@ export async function getAuthors(idToken: string): Promise<AuthorItem[]> {
   return response.data.items
 }
 
+export async function getAuthor(
+  idToken: string,
+  AuthorId: string
+): Promise<AuthorItem> {
+  console.log('Fetching Authors')
+
+  const response = await Axios.get(`${apiEndpoint}/authors/${AuthorId}`, {
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${idToken}`
+    }
+  })
+  console.log('Authros:', response.data)
+  return response.data.items
+}
+
 export async function createAuthor(
   idToken: string,
   newAuthor: CreateAuthorRequest

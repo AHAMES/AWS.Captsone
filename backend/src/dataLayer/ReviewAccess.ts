@@ -75,9 +75,10 @@ export class ReviewAccess {
         ':bookId': bookId
       }
     }
-    const review = await (await this.docClient.query(params).promise()).Items
-    logger.info('item found', { review })
-    return review[0] as UserReviewItem
+    const review = await this.docClient.query(params).promise()
+    const item = review.Items[0]
+    logger.info('item found', { item })
+    return item as UserReviewItem
   }
   async updateReview(bookId, userId, reviewRate) {
     logger.info('updateReview: bookId ' + bookId + ' attempting to update book')

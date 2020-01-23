@@ -15,26 +15,17 @@ export async function createReview(
   jwkToken
 ): Promise<UserReviewItem> {
   const book = await booksAccess.getBook(newItem.bookId)
+  logger.info('CreateReview: Book checked ', { book })
   if (book == null) {
+    logger.info('CreateReview: Book checked in null', { book })
     return null
   } else {
     const userId = parseUserId(jwkToken)
     logger.info('CreateReview: CheckuserID ' + userId)
 
-    const review = reviewAccess.getReview(newItem.bookId, userId)
-    logger.info('CreateReview: check if exists ', { review })
-    if (Object.keys(review).length != 0) {
-      return {
-        bookId: newItem.bookId,
-        reviewRate: -1,
-        userId: userId,
-        createdAt: 'X'
-      }
-    } else {
-      newItem.userId = userId
-      logger.info('CreateReview attempting to create a review')
-      return await reviewAccess.createReview(newItem)
-    }
+    newItem.userId = userId
+    logger.info('CreateReview attempting to create a review')
+    return await reviewAccess.createReview(newItem)
   }
 }
 
