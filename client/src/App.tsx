@@ -7,7 +7,7 @@ import { EditAuthor } from './components/EditAuthor'
 import { LogIn } from './components/LogIn'
 import { NotFound } from './components/NotFound'
 import { Author } from './components/Author'
-
+import { Book } from './components/AuthorsBook'
 export interface AppProps {}
 
 export interface AppProps {
@@ -103,7 +103,13 @@ export default class App extends Component<AppProps, AppState> {
             return <EditAuthor {...props} auth={this.props.auth} />
           }}
         />
-
+        <Route
+          path="/authors/:AuthorId/books"
+          exact
+          render={props => {
+            return <Book {...props} auth={this.props.auth} />
+          }}
+        />
         <Route component={NotFound} />
       </Switch>
     )

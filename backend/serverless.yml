@@ -6,7 +6,8 @@ plugins:
   - serverless-iam-roles-per-function
   - serverless-reqvalidator-plugin
   - serverless-aws-documentation
-
+package:
+  individually: true
 provider:
   name: aws
   runtime: nodejs12.x
@@ -33,6 +34,21 @@ provider:
     BUCKET_REGION: ${self:provider.region}
     SIGNED_URL_EXPIRATION: 300
   iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - xray:PutTraceSegments
+      Resource:
+        - '*'
+    - Effect: Allow
+      Action:
+        - s3:PutObject
+        - s3:GetObject
+      Resource: arn:aws:s3:::${self:provider.environment.AUTHORS_S3_BUCKET}/*
+    - Effect: Allow
+      Action:
+        - s3:PutObject
+        - s3:GetObject
+      Resource: arn:aws:s3:::${self:provider.environment.BOOKS_S3_BUCKET}/*
     - Effect: Allow
       Action:
         - xray:PutTraceSegments
@@ -496,6 +512,67 @@ resources:
                 KeyType: HASH
             Projection:
               ProjectionType: ALL
+
+    AuthorsBucket:
+      Type: AWS::S3::Bucket
+      Properties:
+        BucketName: ${self:provider.environment.AUTHORS_S3_BUCKET}
+        CorsConfiguration:
+          CorsRules:
+            - AllowedOrigins:
+                - '*'
+              AllowedHeaders:
+                - '*'
+              AllowedMethods:
+                - GET
+                - PUT
+                - POST
+                - DELETE
+                - HEAD
+              MaxAge: 3000
+    BooksBucket:
+      Type: AWS::S3::Bucket
+      Properties:
+        BucketName: ${self:provider.environment.BOOKS_S3_BUCKET}
+        CorsConfiguration:
+          CorsRules:
+            - AllowedOrigins:
+                - '*'
+              AllowedHeaders:
+                - '*'
+              AllowedMethods:
+                - GET
+                - PUT
+                - POST
+                - DELETE
+                - HEAD
+              MaxAge: 3000
+    BooksBucketPolicy:
+      Type: AWS::S3::BucketPolicy
+      Properties:
+        PolicyDocument:
+          Id: MyPolicy
+          Version: '2012-10-17'
+          Statement:
+            - Sid: PublicReadForGetBucketObjects
+              Effect: Allow
+              Principal: '*'
+              Action: 's3:GetObject'
+              Resource: 'arn:aws:s3:::${self:provider.environment.AUTHORS_S3_BUCKET}/*'
+        Bucket: !Ref AttachmentsBucket
+    AuthorsBucketPolicy:
+      Type: AWS::S3::BucketPolicy
+      Properties:
+        PolicyDocument:
+          Id: MyPolicy
+          Version: '2012-10-17'
+          Statement:
+            - Sid: PublicReadForGetBucketObjects
+              Effect: Allow
+              Principal: '*'
+              Action: 's3:GetObject'
+              Resource: 'arn:aws:s3:::${self:provider.environment.BOOKS_S3_BUCKET}/*'
+        Bucket: !Ref AttachmentsBucket
     RequestBodyValidator:
       Type: AWS::ApiGateway::RequestValidator
       Properties:

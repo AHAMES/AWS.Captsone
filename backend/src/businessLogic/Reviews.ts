@@ -14,26 +14,15 @@ export async function createReview(
   newItem: UserReviewItem,
   jwkToken
 ): Promise<UserReviewItem> {
-  const book = await booksAccess.getBook(newItem.bookId)
-  logger.info('CreateReview: Book checked ', { book })
-  if (book == null) {
-    logger.info('CreateReview: Book checked in null', { book })
-    return null
-  } else {
-    const userId = parseUserId(jwkToken)
-    logger.info('CreateReview: CheckuserID ' + userId)
+  const userId = parseUserId(jwkToken)
+  logger.info('CreateReview: CheckuserID ' + userId)
 
-    newItem.userId = userId
-    logger.info('CreateReview attempting to create a review')
-    return await reviewAccess.createReview(newItem)
-  }
+  newItem.userId = userId
+  logger.info('CreateReview attempting to create a review')
+  return await reviewAccess.createReview(newItem)
 }
 
 export async function deleteReview(bookId, jwkToken) {
-  const book = await booksAccess.getBook(bookId)
-  if (book == null) {
-    return null
-  }
   const userId = parseUserId(jwkToken)
   logger.info('getReview: CheckuserID ' + userId)
 
@@ -45,12 +34,6 @@ export async function deleteReview(bookId, jwkToken) {
 }
 
 export async function getReview(bookId, jwkToken): Promise<UserReviewItem> {
-  const book = await booksAccess.getBook(bookId)
-  if (book == null) {
-    return null
-  }
-
-  logger.info('getReview: Book found ' + book)
   const userId = parseUserId(jwkToken)
   logger.info('getReview: CheckuserID ' + userId)
   const response = reviewAccess.getReview(bookId, userId)

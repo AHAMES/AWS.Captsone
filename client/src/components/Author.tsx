@@ -45,6 +45,10 @@ export class Author extends React.PureComponent<AuthorsProps, AuthorsState> {
     this.props.history.push(`/authors/${authorId}/edit`)
   }
 
+  onBooksButtonClick = (AuthorId: string) => {
+    this.props.history.push(`/authors/${AuthorId}/books`)
+  }
+
   onAuthorCreate = async (event: React.ChangeEvent<HTMLButtonElement>) => {
     try {
       const newAuthor = await createAuthor(this.props.auth.getIdToken(), {
@@ -157,9 +161,7 @@ export class Author extends React.PureComponent<AuthorsProps, AuthorsState> {
               <Grid.Column width={10} verticalAlign="middle">
                 {author.name}
               </Grid.Column>
-              {/*<Grid.Column width={3} floated="right">
-                {.dueDate}
-              </Grid.Column>*/}
+              <Grid.Column width={3} floated="right"></Grid.Column>
               <Grid.Column width={1} floated="right">
                 <Button
                   icon
@@ -173,7 +175,7 @@ export class Author extends React.PureComponent<AuthorsProps, AuthorsState> {
                 <Button
                   icon
                   color="green"
-                  //onClick={() => this.onTodoDelete(todo.todoId)}
+                  onClick={() => this.onBooksButtonClick(author.authorId)}
                 >
                   <Icon name="book" />
                 </Button>
