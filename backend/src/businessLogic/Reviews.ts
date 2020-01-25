@@ -26,10 +26,6 @@ export async function deleteReview(bookId, jwkToken) {
   const userId = parseUserId(jwkToken)
   logger.info('getReview: CheckuserID ' + userId)
 
-  const review = await reviewAccess.getReview(bookId, userId)
-  if (review == null) {
-    return null
-  }
   return await reviewAccess.deleteReview(bookId, userId)
 }
 

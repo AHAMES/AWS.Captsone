@@ -8,6 +8,7 @@ import { LogIn } from './components/LogIn'
 import { NotFound } from './components/NotFound'
 import { Author } from './components/Author'
 import { Book } from './components/AuthorsBook'
+import { Reviews } from './components/Reviews'
 export interface AppProps {}
 
 export interface AppProps {
@@ -108,6 +109,14 @@ export default class App extends Component<AppProps, AppState> {
           exact
           render={props => {
             return <Book {...props} auth={this.props.auth} />
+          }}
+        />
+
+        <Route
+          path="/reviews/:bookId"
+          exact
+          render={props => {
+            return <Reviews {...props} auth={this.props.auth} />
           }}
         />
         <Route component={NotFound} />

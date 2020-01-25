@@ -7,7 +7,7 @@ plugins:
   - serverless-reqvalidator-plugin
   - serverless-aws-documentation
 package:
-  individually: true
+  individually: false
 provider:
   name: aws
   runtime: nodejs12.x
@@ -21,11 +21,11 @@ provider:
 
   environment:
     AUTHORS_TABLE: ahs-BookApp-Authors-${self:provider.stage}
-    AUTHORS_S3_BUCKET: ahs-BookApp-Authors-Bucket-${self:provider.stage}
+    AUTHORS_S3_BUCKET: ahs-bookapp-authors-${self:provider.stage}
     AUTHORS_ID_INDEX: AuthorIdIndex
 
     BOOKS_TABLE: ahs-BookApp-Books-${self:provider.stage}
-    BOOKS_S3_BUCKET: ahs-BookApp-Books-Bucket-${self:provider.stage}
+    BOOKS_S3_BUCKET: ahs-bookapp-books-${self:provider.stage}
     BOOKS_ID_INDEX: BookIdIndex
 
     USER_REVIEW_TABLE: ahs-BookApp-User-${self:provider.stage}
@@ -433,6 +433,7 @@ functions:
       - http:
           method: post
           path: commons/{itemId}/attachment
+    iamRoleStatementsInherit: true
 
 resources:
   Resources:
@@ -530,6 +531,20 @@ resources:
                 - DELETE
                 - HEAD
               MaxAge: 3000
+
+    AuthorsBucketPolicy:
+      Type: AWS::S3::BucketPolicy
+      Properties:
+        PolicyDocument:
+          Id: MyPolicy
+          Version: '2012-10-17'
+          Statement:
+            - Sid: PublicReadForGetBucketObjects
+              Effect: Allow
+              Principal: '*'
+              Action: 's3:GetObject'
+              Resource: 'arn:aws:s3:::${self:provider.environment.AUTHORS_S3_BUCKET}/*'
+        Bucket: !Ref AuthorsBucket
     BooksBucket:
       Type: AWS::S3::Bucket
       Properties:
@@ -547,6 +562,7 @@ resources:
                 - DELETE
                 - HEAD
               MaxAge: 3000
+
     BooksBucketPolicy:
       Type: AWS::S3::BucketPolicy
       Properties:
@@ -558,21 +574,9 @@ resources:
               Effect: Allow
               Principal: '*'
               Action: 's3:GetObject'
-              Resource: 'arn:aws:s3:::${self:provider.environment.AUTHORS_S3_BUCKET}/*'
-        Bucket: !Ref AttachmentsBucket
-    AuthorsBucketPolicy:
-      Type: AWS::S3::BucketPolicy
-      Properties:
-        PolicyDocument:
-          Id: MyPolicy
-          Version: '2012-10-17'
-          Statement:
-            - Sid: PublicReadForGetBucketObjects
-              Effect: Allow
-              Principal: '*'
-              Action: 's3:GetObject'
               Resource: 'arn:aws:s3:::${self:provider.environment.BOOKS_S3_BUCKET}/*'
-        Bucket: !Ref AttachmentsBucket
+        Bucket: !Ref BooksBucket
+
     RequestBodyValidator:
       Type: AWS::ApiGateway::RequestValidator
       Properties:

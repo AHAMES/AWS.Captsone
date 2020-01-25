@@ -107,10 +107,8 @@ export class ReviewAccess {
     const params = {
       TableName: this.userTableName,
       Key: {
-        Key: {
-          bookId: bookId,
-          userId: userId
-        }
+        bookId: bookId,
+        userId: userId
       }
     }
     const review = await this.docClient.delete(params).promise()

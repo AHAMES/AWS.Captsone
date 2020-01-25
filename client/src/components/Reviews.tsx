@@ -14,74 +14,81 @@ import {
   Loader
 } from 'semantic-ui-react'
 
-import { createBook, getAuthorBooks, patchBook } from '../api/book-api'
-
+import { getBookReviews, deleteReview } from '../api/reviews-api'
+import { getBookById } from '../api/book-api'
+import { getAuthor } from '../api/author-api'
 import Auth from '../auth/Auth'
+import { UserReviewItem } from '../types/UserReviewItem'
 import { BookItem } from '../types/BookItem'
-
-interface BooksProps {
+import { AuthorItem } from '../types/AuthorItem'
+import {} from '../api/author-api'
+interface ReviewProps {
   match: {
     params: {
-      AuthorId: string
+      bookId: string
     }
   }
   auth: Auth
   history: History
 }
 
-interface BooksState {
-  authorId: string
-  Books: BookItem[]
-  newBookName: string
-  loadingBooks: boolean
+interface ReviewState {
+  Reviews: any[]
+  loadingReviews: boolean
 }
 
-export class Book extends React.PureComponent<BooksProps, BooksState> {
-  state: BooksState = {
-    authorId: this.props.match.params.AuthorId,
-    Books: [],
-    newBookName: '',
-    loadingBooks: true
+export class Reviews extends React.PureComponent<ReviewProps, ReviewState> {
+  state: ReviewState = {
+    Reviews: [],
+    loadingReviews: true
   }
-
-  handleNameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    this.setState({ newBookName: event.target.value })
-  }
-
-  onEditButtonClick = (bookId: string) => {
-    this.props.history.push(`/books/${bookId}/edit`)
-  }
-
-  onReviewssButtonClick = (bookId: string) => {
-    this.props.history.push(`/books/${bookId}/reviews`)
-  }
-
-  onBookCreate = async (event: React.ChangeEvent<HTMLButtonElement>) => {
+  onReviewDelete = async (review: UserReviewItem) => {
     try {
-      const newBook = await createBook(this.props.auth.getIdToken(), {
-        name: this.state.newBookName,
-        genre: '',
-        releaseDate: new Date().getFullYear().toString(),
-        authorId: this.props.match.params.AuthorId
-      })
-      this.setState({
-        Books: [...this.state.Books, newBook],
-        newBookName: ''
-      })
+      await deleteReview(this.props.auth.getIdToken(), review.bookId)
+      var array = [...this.state.Reviews]
+      var index = array.indexOf(review)
+      if (index !== -1) {
+        array.splice(index, 1)
+        this.setState({ Reviews: array })
+      }
     } catch {
       alert('Book creation failed')
     }
   }
 
+  getBookData = async (
+    bookId: string
+  ): Promise<{ name: string; genre: string; authorName: string }> => {
+    try {
+      const book = await getBookById(this.props.auth.getIdToken(), bookId)
+      const author = await getAuthor(
+        this.props.auth.getIdToken(),
+        book.authorId
+      )
+      return { name: book.name, genre: book.genre, authorName: author.name }
+    } catch {
+      alert('Failed to remove review failed')
+      return { name: '', genre: '', authorName: '' }
+    }
+  }
   async componentDidMount() {
     try {
-      const Books = await getAuthorBooks(
+      console.log(this.props.match.params.bookId)
+      const Reviews = await getBookReviews(
         this.props.auth.getIdToken(),
-        this.props.match.params.AuthorId
+        this.props.match.params.bookId
       )
+      console.log(Reviews)
+
+      const ReviewData = Reviews.map(review => {
+        return {
+          review: review,
+          bookData: this.getBookData(review.bookId)
+        }
+      })
       this.setState({
-        Books,
-        loadingBooks: false
+        Reviews: ReviewData,
+        loadingReviews: false
       })
     } catch (e) {
       alert(`Failed to fetch Books: ${e.message}`)
@@ -91,42 +98,15 @@ export class Book extends React.PureComponent<BooksProps, BooksState> {
   render() {
     return (
       <div>
-        <Header as="h1">Books by the author</Header>
+        <Header as="h1">Reviews for the book</Header>
 
-        {this.renderCreateBookInput()}
-
-        {this.renderBooks()}
+        {this.renderReviews()}
       </div>
     )
   }
 
-  renderCreateBookInput() {
-    return (
-      <Grid.Row>
-        <Grid.Column width={16}>
-          <Input
-            action={{
-              color: 'teal',
-              labelPosition: 'left',
-              icon: 'add',
-              content: 'New task',
-              onClick: this.onBookCreate
-            }}
-            fluid
-            actionPosition="left"
-            placeholder="To kill a mocking bird..."
-            onChange={this.handleNameChange}
-          />
-        </Grid.Column>
-        <Grid.Column width={16}>
-          <Divider />
-        </Grid.Column>
-      </Grid.Row>
-    )
-  }
-
-  renderBooks() {
-    return this.renderBooksList()
+  renderReviews() {
+    return this.renderReviewsList()
   }
 
   renderLoading() {
@@ -139,12 +119,14 @@ export class Book extends React.PureComponent<BooksProps, BooksState> {
     )
   }
 
-  renderBooksList() {
+  renderReviewsList() {
     return (
       <Grid padded>
-        {this.state.Books.map((book, pos) => {
+        {console.log(this.state.Reviews)}
+        {this.state.Reviews.map((review, pos) => {
+          console.log(review)
           return (
-            <Grid.Row key={book.bookId}>
+            <Grid.Row key={review.review.createdAt}>
               <Grid.Column width={1} verticalAlign="middle">
                 {/*<Checkbox
                   onChange={() => this.onAuthorCheck(pos)}
@@ -152,30 +134,28 @@ export class Book extends React.PureComponent<BooksProps, BooksState> {
                 />*/}
               </Grid.Column>
               <Grid.Column width={10} verticalAlign="middle">
-                {book.name}
+                {review.bookData.name}
               </Grid.Column>
-              <Grid.Column width={3} floated="right"></Grid.Column>
+              <Grid.Column width={10} verticalAlign="middle">
+                {review.bookData.authorName}
+              </Grid.Column>
+              <Grid.Column width={10} verticalAlign="middle">
+                {review.bookData.genre}
+              </Grid.Column>
+
+              <Grid.Column width={2} verticalAlign="middle">
+                {review.review.reviewRate}
+              </Grid.Column>
               <Grid.Column width={1} floated="right">
                 <Button
                   icon
-                  color="blue"
-                  onClick={() => this.onEditButtonClick(book.bookId)}
+                  color="red"
+                  onClick={() => this.onReviewDelete(review)}
                 >
-                  <Icon name="pencil" />
+                  {<Icon name="delete" />}
                 </Button>
               </Grid.Column>
-              <Grid.Column width={1} floated="right">
-                <Button
-                  icon
-                  color="green"
-                  //onClick={() => this.onTodoDelete(todo.todoId)}
-                >
-                  {<Icon name="book" />}
-                </Button>
-              </Grid.Column>
-              {book.attachmentUrl && (
-                <Image src={book.attachmentUrl} size="small" wrapped />
-              )}
+
               <Grid.Column width={16}>
                 <Divider />
               </Grid.Column>

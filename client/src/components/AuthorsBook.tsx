@@ -72,7 +72,9 @@ export class Book extends React.PureComponent<BooksProps, BooksState> {
       alert('Book creation failed')
     }
   }
-
+  onBooksButtonClick = (bookId: string) => {
+    this.props.history.push(`/reviews/${bookId}`)
+  }
   async componentDidMount() {
     try {
       const Books = await getAuthorBooks(
@@ -168,7 +170,7 @@ export class Book extends React.PureComponent<BooksProps, BooksState> {
                 <Button
                   icon
                   color="green"
-                  //onClick={() => this.onTodoDelete(todo.todoId)}
+                  onClick={() => this.onBooksButtonClick(book.bookId)}
                 >
                   {<Icon name="book" />}
                 </Button>

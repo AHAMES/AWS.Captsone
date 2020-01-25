@@ -1,61 +1,60 @@
 import { apiEndpoint } from '../config'
-import { BookItem } from '../types/BookItem'
-import { CreateBookRequest } from '../types/CreateBookRequest'
+import { UserReviewItem } from '../types/UserReviewItem'
+import { CreateUserReviewRequest } from '../types/CreateUserReviewRequest'
 import Axios from 'axios'
-import { UpdateBookRequest } from '../types/UpdateBookRequest'
 
-export async function getAuthorBooks(
-  idToken: string,
-  AuthorId: string
-): Promise<BookItem[]> {
-  console.log('Fetching Books by Author')
-
-  const response = await Axios.get(`${apiEndpoint}/books/author/${AuthorId}`, {
-    headers: {
-      'Content-Type': 'application/json',
-      Authorization: `Bearer ${idToken}`
-    }
-  })
-  console.log('Books:', response.data)
-  return response.data.items
-}
-
-export async function getBookById(
+export async function getBookReviews(
   idToken: string,
   bookId: string
-): Promise<BookItem> {
-  console.log('Fetching Book')
+): Promise<UserReviewItem[]> {
+  console.log('Fetching Books by Author')
 
-  const response = await Axios.get(`${apiEndpoint}/books/${bookId}`, {
+  const response = await Axios.get(`${apiEndpoint}/userReview/all/${bookId}`, {
     headers: {
       'Content-Type': 'application/json',
       Authorization: `Bearer ${idToken}`
     }
   })
-  console.log('Books:', response.data)
-  return response.data.items
+  console.log('Reviews:', response.data)
+  return response.data.item
 }
 
-export async function getAllBooks(idToken: string): Promise<BookItem> {
-  console.log('Fetching Book')
+export async function getUserReviews(idToken: string): Promise<UserReviewItem> {
+  console.log('Fetching Reviews')
 
-  const response = await Axios.get(`${apiEndpoint}/books`, {
+  const response = await Axios.get(`${apiEndpoint}/userReview/all`, {
     headers: {
       'Content-Type': 'application/json',
       Authorization: `Bearer ${idToken}`
     }
   })
-  console.log('Books:', response.data)
+  console.log('Reviews:', response.data)
   return response.data.items
 }
 
-export async function createBook(
+export async function getReview(
   idToken: string,
-  newBook: CreateBookRequest
-): Promise<BookItem> {
+  bookId: string
+): Promise<UserReviewItem> {
+  console.log('Fetching Review')
+
+  const response = await Axios.get(`${apiEndpoint}/userReview/${bookId}`, {
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${idToken}`
+    }
+  })
+  console.log('Review:', response.data)
+  return response.data.items
+}
+
+export async function createReview(
+  idToken: string,
+  newReview: CreateUserReviewRequest
+): Promise<UserReviewItem> {
   const response = await Axios.post(
-    `${apiEndpoint}/books`,
-    JSON.stringify(newBook),
+    `${apiEndpoint}/userReview`,
+    JSON.stringify(newReview),
     {
       headers: {
         'Content-Type': 'application/json',
@@ -65,15 +64,23 @@ export async function createBook(
   )
   return response.data.item
 }
+export async function deleteReview(idToken: string, bookId: string) {
+  const response = await Axios.delete(`${apiEndpoint}/userReview/${bookId}`, {
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${idToken}`
+    }
+  })
+}
 
-export async function patchBook(
+export async function patchReview(
   idToken: string,
   bookId: string,
-  updatedBook: UpdateBookRequest
+  reviewRate: number
 ): Promise<void> {
   await Axios.patch(
-    `${apiEndpoint}/books/${bookId}`,
-    JSON.stringify(updatedBook),
+    `${apiEndpoint}/userReview/${bookId}`,
+    JSON.stringify(reviewRate),
     {
       headers: {
         'Content-Type': 'application/json',
