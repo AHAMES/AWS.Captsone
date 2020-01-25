@@ -12,7 +12,7 @@ enum UploadState {
 interface EditAuthorProps {
   match: {
     params: {
-      AuthorId: string
+      authorId: string
     }
   }
   auth: Auth
@@ -55,7 +55,7 @@ export class EditAuthor extends React.PureComponent<
       this.setUploadState(UploadState.FetchingPresignedUrl)
       const uploadUrl = await getUploadUrl(
         this.props.auth.getIdToken(),
-        this.props.match.params.AuthorId
+        this.props.match.params.authorId
       )
 
       this.setUploadState(UploadState.UploadingFile)

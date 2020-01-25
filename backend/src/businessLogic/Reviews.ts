@@ -29,13 +29,13 @@ export async function deleteReview(bookId, jwkToken) {
   return await reviewAccess.deleteReview(bookId, userId)
 }
 
-export async function getReview(bookId, jwkToken): Promise<UserReviewItem> {
+/*export async function getReview(bookId, jwkToken): Promise<UserReviewItem> {
   const userId = parseUserId(jwkToken)
   logger.info('getReview: CheckuserID ' + userId)
   const response = reviewAccess.getReview(bookId, userId)
   logger.info('getReview: Item found ' + response)
   return await response
-}
+}*/
 
 export async function updateReview(bookId, jwkToken, reviewRate) {
   const book = await booksAccess.getBook(bookId)
@@ -46,10 +46,10 @@ export async function updateReview(bookId, jwkToken, reviewRate) {
   const userId = parseUserId(jwkToken)
   logger.info('updateReview: CheckuserID ' + userId)
 
-  const review = await reviewAccess.getReview(bookId, userId)
+  /*const review = await reviewAccess.getReview(bookId, userId)
   if (review == null) {
     return null
-  }
+  }*/
 
   return await reviewAccess.updateReview(bookId, userId, reviewRate)
 }

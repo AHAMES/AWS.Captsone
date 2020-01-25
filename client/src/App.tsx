@@ -61,6 +61,16 @@ export default class App extends Component<AppProps, AppState> {
           <Link to="/">Home</Link>
         </Menu.Item>
 
+        <Menu.Item name="authors">
+          <Link to="/authors">Books</Link>
+        </Menu.Item>
+        <Menu.Item name="books">
+          <Link to="/books">Books</Link>
+        </Menu.Item>
+
+        <Menu.Item name="reviews">
+          <Link to="/">My Reviews</Link>
+        </Menu.Item>
         <Menu.Menu position="right">{this.logInLogOutButton()}</Menu.Menu>
       </Menu>
     )
@@ -96,6 +106,13 @@ export default class App extends Component<AppProps, AppState> {
             return <Author {...props} auth={this.props.auth} />
           }}
         />
+        <Route
+          path="/authors"
+          exact
+          render={props => {
+            return <Author {...props} auth={this.props.auth} />
+          }}
+        />
 
         <Route
           path="/authors/:authorId/edit"
@@ -111,12 +128,34 @@ export default class App extends Component<AppProps, AppState> {
             return <Book {...props} auth={this.props.auth} />
           }}
         />
-
+        <Route
+          path="/books"
+          exact
+          render={props => {
+            return <Books {...props} auth={this.props.auth} />
+          }}
+        />
+        <Route
+          path="/books/:bookId/edit"
+          exact
+          render={props => {
+            return <EditBook {...props} auth={this.props.auth} />
+          }}
+        />
         <Route
           path="/reviews/:bookId"
           exact
           render={props => {
             return <Reviews {...props} auth={this.props.auth} />
+          }}
+        />
+        <Route component={NotFound} />
+
+        <Route
+          path="/reviews"
+          exact
+          render={props => {
+            return <MyReviews {...props} auth={this.props.auth} />
           }}
         />
         <Route component={NotFound} />

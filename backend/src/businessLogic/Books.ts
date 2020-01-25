@@ -11,10 +11,10 @@ const authorsAccess = new AuthorsAccess()
 const booksAccess = new BooksAccess()
 
 export async function createBook(newItem: BookItem): Promise<BookItem> {
-  const author = await authorsAccess.getAuthor(newItem.authorId)
-  if (author == null) {
+  //const author = await authorsAccess.getAuthor(newItem.authorId)
+  /*if (author == null) {
     return null
-  }
+  }*/
   const bookId = uuid.v4()
   newItem.bookId = bookId
   logger.info('createBook attempting to create book')

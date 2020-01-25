@@ -61,7 +61,7 @@ export class ReviewAccess {
     return review.Items as UserReviewItem[]
   }
 
-  async getReview(bookId, userId): Promise<UserReviewItem> {
+  /* async getReview(bookId, userId): Promise<UserReviewItem> {
     logger.info(
       'getReview: BookID ' + bookId + ' attempting to get a review for the book'
     )
@@ -79,7 +79,7 @@ export class ReviewAccess {
     const item = review.Items[0]
     logger.info('item found', { item })
     return item as UserReviewItem
-  }
+  }*/
   async updateReview(bookId, userId, reviewRate) {
     logger.info('updateReview: bookId ' + bookId + ' attempting to update book')
     const params = {

@@ -28,7 +28,7 @@ export const handler: APIGatewayProxyHandler = async (
     reviewRate: newReview.reviewRate
   }
   const newItem: UserReviewItem = await createReview(ItemDetails, jwtToken)
-  if (newItem == null) {
+  /*if (newItem == null) {
     logger.info('creation failed book does not exist')
 
     return {
@@ -57,7 +57,7 @@ export const handler: APIGatewayProxyHandler = async (
         item: newItem
       })
     }
-  }
+  }*/
   logger.info('created Item', newItem)
   return {
     statusCode: 201,

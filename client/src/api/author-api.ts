@@ -73,7 +73,7 @@ export async function getUploadUrl(
 ): Promise<string> {
   const response = await Axios.post(
     `${apiEndpoint}/commons/${AuthorId}/attachment`,
-    '',
+    JSON.stringify({bucketId:"author"}),
     {
       headers: {
         'Content-Type': 'application/json',

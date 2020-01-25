@@ -6,8 +6,7 @@ plugins:
   - serverless-iam-roles-per-function
   - serverless-reqvalidator-plugin
   - serverless-aws-documentation
-package:
-  individually: false
+
 provider:
   name: aws
   runtime: nodejs12.x
@@ -328,31 +327,6 @@ functions:
           - dynamodb:Scan
           - dynamodb:Query
         Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.BOOKS_TABLE}/index/${self:provider.environment.BOOKS_ID_INDEX}
-  getReview:
-    handler: src/lambda/http/getReview.handler
-    events:
-      - http:
-          method: get
-          path: userReview/{bookId}
-          authorizer: Auth
-          cors: true
-    iamRoleStatementsInherit: true
-    iamRoleStatements:
-      - Effect: Allow
-        Action:
-          - dynamodb:Query
-        Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.USER_REVIEW_TABLE}
-
-      - Effect: Allow
-        Action:
-          - dynamodb:Scan
-          - dynamodb:Query
-        Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.BOOKS_TABLE}
-      - Effect: Allow
-        Action:
-          - dynamodb:Scan
-          - dynamodb:Query
-        Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.BOOKS_TABLE}/index/${self:provider.environment.BOOKS_ID_INDEX}
 
   getUserReviews:
     handler: src/lambda/http/getAllUserReviews.handler
@@ -433,6 +407,8 @@ functions:
       - http:
           method: post
           path: commons/{itemId}/attachment
+          authorizer: Auth
+          cors: true
     iamRoleStatementsInherit: true
 
 resources:

@@ -152,14 +152,14 @@ export class Author extends React.PureComponent<AuthorsProps, AuthorsState> {
         {this.state.Authors.map((author, pos) => {
           return (
             <Grid.Row key={author.authorId}>
-              <Grid.Column width={1} verticalAlign="middle">
-                <Checkbox
-                  onChange={() => this.onAuthorCheck(pos)}
-                  //checked={}
-                />
-              </Grid.Column>
               <Grid.Column width={10} verticalAlign="middle">
                 {author.name}
+              </Grid.Column>
+              <Grid.Column width={1} verticalAlign="middle">
+                {/*<Checkbox
+                  onChange={() => this.onAuthorCheck(pos)}
+                  //checked={}
+                />*/}
               </Grid.Column>
               <Grid.Column width={3} floated="right"></Grid.Column>
               <Grid.Column width={1} floated="right">

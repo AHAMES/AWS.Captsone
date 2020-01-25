@@ -33,14 +33,20 @@ interface ReviewProps {
 }
 
 interface ReviewState {
-  Reviews: any[]
+  Reviews: UserReviewItem[]
+  bookData: { BookName: string; AuthorName: string; genre: string }
   loadingReviews: boolean
+  positiveReviews: number
+  negativeReviews: number
 }
 
 export class Reviews extends React.PureComponent<ReviewProps, ReviewState> {
   state: ReviewState = {
     Reviews: [],
-    loadingReviews: true
+    bookData: { BookName: 'string', AuthorName: 'string', genre: 'string' },
+    loadingReviews: true,
+    positiveReviews: 0,
+    negativeReviews: 0
   }
   onReviewDelete = async (review: UserReviewItem) => {
     try {
@@ -52,23 +58,23 @@ export class Reviews extends React.PureComponent<ReviewProps, ReviewState> {
         this.setState({ Reviews: array })
       }
     } catch {
-      alert('Book creation failed')
+      alert('review deletion creation failed')
     }
   }
 
   getBookData = async (
     bookId: string
-  ): Promise<{ name: string; genre: string; authorName: string }> => {
+  ): Promise<{ BookName: string; genre: string; AuthorName: string }> => {
     try {
       const book = await getBookById(this.props.auth.getIdToken(), bookId)
       const author = await getAuthor(
         this.props.auth.getIdToken(),
         book.authorId
       )
-      return { name: book.name, genre: book.genre, authorName: author.name }
+      return { BookName: book.name, genre: book.genre, AuthorName: author.name }
     } catch {
       alert('Failed to remove review failed')
-      return { name: '', genre: '', authorName: '' }
+      return { BookName: '', genre: '', AuthorName: '' }
     }
   }
   async componentDidMount() {
@@ -80,15 +86,15 @@ export class Reviews extends React.PureComponent<ReviewProps, ReviewState> {
       )
       console.log(Reviews)
 
-      const ReviewData = Reviews.map(review => {
-        return {
-          review: review,
-          bookData: this.getBookData(review.bookId)
-        }
-      })
+      const BookData = await this.getBookData(this.props.match.params.bookId)
+      const positive = Reviews.filter(s => s.reviewRate >= 0).length
+      const negative = Reviews.filter(s => s.reviewRate < 0).length
       this.setState({
-        Reviews: ReviewData,
-        loadingReviews: false
+        Reviews: Reviews,
+        loadingReviews: false,
+        bookData: BookData,
+        positiveReviews: positive,
+        negativeReviews: negative
       })
     } catch (e) {
       alert(`Failed to fetch Books: ${e.message}`)
@@ -98,8 +104,20 @@ export class Reviews extends React.PureComponent<ReviewProps, ReviewState> {
   render() {
     return (
       <div>
-        <Header as="h1">Reviews for the book</Header>
-
+        <Header as="h1">
+          Reviews for {this.state.bookData.BookName} by{' '}
+          {this.state.bookData.AuthorName}
+        </Header>
+        <Grid.Row>
+          <Button icon color="green">
+            <Icon name="thumbs up outline" />
+          </Button>{' '}
+          {this.state.positiveReviews}
+          <Button icon color="red">
+            <Icon name="thumbs down outline" />
+          </Button>
+          {this.state.negativeReviews}
+        </Grid.Row>
         {this.renderReviews()}
       </div>
     )
@@ -118,7 +136,21 @@ export class Reviews extends React.PureComponent<ReviewProps, ReviewState> {
       </Grid.Row>
     )
   }
-
+  renderReview(reviewRate: number) {
+    if (reviewRate >= 0) {
+      return (
+        <Button icon color="green">
+          <Icon name="thumbs up outline" />
+        </Button>
+      )
+    } else if (reviewRate < 0) {
+      return (
+        <Button icon color="red">
+          <Icon name="thumbs down outline" />
+        </Button>
+      )
+    }
+  }
   renderReviewsList() {
     return (
       <Grid padded>
@@ -126,34 +158,31 @@ export class Reviews extends React.PureComponent<ReviewProps, ReviewState> {
         {this.state.Reviews.map((review, pos) => {
           console.log(review)
           return (
-            <Grid.Row key={review.review.createdAt}>
+            <Grid.Row key={review.createdAt}>
               <Grid.Column width={1} verticalAlign="middle">
-                {/*<Checkbox
-                  onChange={() => this.onAuthorCheck(pos)}
-                  //checked={}
-                />*/}
+                {this.renderReview(review.reviewRate)}
               </Grid.Column>
-              <Grid.Column width={10} verticalAlign="middle">
-                {review.bookData.name}
+              <Grid.Column width={4} verticalAlign="middle">
+                {}
               </Grid.Column>
-              <Grid.Column width={10} verticalAlign="middle">
-                {review.bookData.authorName}
+              <Grid.Column width={4} verticalAlign="middle">
+                {}
               </Grid.Column>
-              <Grid.Column width={10} verticalAlign="middle">
-                {review.bookData.genre}
+              <Grid.Column width={4} verticalAlign="middle">
+                {}
               </Grid.Column>
 
               <Grid.Column width={2} verticalAlign="middle">
-                {review.review.reviewRate}
+                {}
               </Grid.Column>
               <Grid.Column width={1} floated="right">
-                <Button
+                {/*<Button
                   icon
                   color="red"
                   onClick={() => this.onReviewDelete(review)}
                 >
                   {<Icon name="delete" />}
-                </Button>
+                </Button>*/}
               </Grid.Column>
 
               <Grid.Column width={16}>
