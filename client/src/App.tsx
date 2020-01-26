@@ -9,6 +9,9 @@ import { NotFound } from './components/NotFound'
 import { Author } from './components/Author'
 import { Book } from './components/AuthorsBook'
 import { Reviews } from './components/Reviews'
+import { Books } from './components/AllBooks'
+import { MyReviews } from './components/UserReviews'
+import { EditBook } from './components/EditBook'
 export interface AppProps {}
 
 export interface AppProps {
@@ -62,14 +65,14 @@ export default class App extends Component<AppProps, AppState> {
         </Menu.Item>
 
         <Menu.Item name="authors">
-          <Link to="/authors">Books</Link>
+          <Link to="/authors">Authors</Link>
         </Menu.Item>
         <Menu.Item name="books">
           <Link to="/books">Books</Link>
         </Menu.Item>
 
         <Menu.Item name="reviews">
-          <Link to="/">My Reviews</Link>
+          <Link to="/reviews">My Reviews</Link>
         </Menu.Item>
         <Menu.Menu position="right">{this.logInLogOutButton()}</Menu.Menu>
       </Menu>
@@ -149,7 +152,6 @@ export default class App extends Component<AppProps, AppState> {
             return <Reviews {...props} auth={this.props.auth} />
           }}
         />
-        <Route component={NotFound} />
 
         <Route
           path="/reviews"

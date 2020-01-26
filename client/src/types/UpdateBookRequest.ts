@@ -5,5 +5,5 @@ export interface UpdateBookRequest {
   name: string
   authorId: string
   releaseDate: string
-  genre: boolean
+  genre: string
 }

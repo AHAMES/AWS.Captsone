@@ -29,6 +29,7 @@ export const handler: APIGatewayProxyHandler = async (
   const userId = parseUserId(jwtToken)
   const itemId = event.pathParameters.itemId
   let bucketName = ''
+
   if (bucketId == 'book') {
     bucketName = process.env.BOOKS_S3_BUCKET
   } else if (bucketId == 'author') {

@@ -112,7 +112,7 @@ export class Author extends React.PureComponent<AuthorsProps, AuthorsState> {
               color: 'teal',
               labelPosition: 'left',
               icon: 'add',
-              content: 'New task',
+              content: 'New Author',
               onClick: this.onAuthorCreate
             }}
             fluid

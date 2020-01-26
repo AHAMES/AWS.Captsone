@@ -4,9 +4,11 @@ import { BooksAccess } from '../dataLayer/BooksAccess'
 //import { AuthorsAccess } from '../dataLayer/AuthorsAccess'
 import { ReviewAccess } from '../dataLayer/ReviewAccess'
 import { parseUserId } from '../auth/utils'
+import { UserReviewItemDisplay } from '../models/UserReviewItemDisplay'
+import { AuthorsAccess } from '../dataLayer/AuthorsAccess'
 const logger = createLogger('Review BLL')
 
-//const authorsAccess = new AuthorsAccess()
+const authorsAccess = new AuthorsAccess()
 const booksAccess = new BooksAccess()
 const reviewAccess = new ReviewAccess()
 
@@ -57,8 +59,30 @@ export async function updateReview(bookId, jwkToken, reviewRate) {
 export async function getUserReviews(jwkToken) {
   const userId = parseUserId(jwkToken)
   logger.info('getUserReviews: CheckuserID ' + userId)
+  let response: UserReviewItemDisplay[] = []
+  const reviews = await reviewAccess.getAllUserReviews(userId)
+  for (let i = 0; i < reviews.length; i++) {
+    const bookData = await booksAccess.getBook(reviews[i].bookId)
 
-  return await reviewAccess.getAllUserReviews(userId)
+    const authorData = await authorsAccess.getAuthor(bookData.authorId)
+    if (
+      typeof authorData === 'undefined' ||
+      typeof authorData === null ||
+      typeof bookData === 'undefined' ||
+      typeof bookData === null
+    ) {
+      continue
+    }
+    response.push({
+      reviewData: reviews[i],
+      bookData: {
+        AuthorName: authorData.name,
+        BookName: bookData.name,
+        genre: bookData.genre
+      }
+    })
+  }
+  return response
 }
 
 export async function getBookReviews(bookId) {

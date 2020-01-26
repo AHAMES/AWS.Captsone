@@ -1,5 +1,6 @@
 import { apiEndpoint } from '../config'
 import { UserReviewItem } from '../types/UserReviewItem'
+import { UserReviewItemDisplay } from '../types/UserReviewItemDisplay'
 import { CreateUserReviewRequest } from '../types/CreateUserReviewRequest'
 import Axios from 'axios'
 
@@ -19,7 +20,9 @@ export async function getBookReviews(
   return response.data.item
 }
 
-export async function getUserReviews(idToken: string): Promise<UserReviewItem> {
+export async function getUserReviews(
+  idToken: string
+): Promise<UserReviewItemDisplay[]> {
   console.log('Fetching Reviews')
 
   const response = await Axios.get(`${apiEndpoint}/userReview/all`, {
@@ -29,7 +32,7 @@ export async function getUserReviews(idToken: string): Promise<UserReviewItem> {
     }
   })
   console.log('Reviews:', response.data)
-  return response.data.items
+  return response.data.item
 }
 
 export async function getReview(

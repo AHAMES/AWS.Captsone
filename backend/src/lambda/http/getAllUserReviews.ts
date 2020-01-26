@@ -7,7 +7,7 @@ import {
 } from 'aws-lambda'
 
 import { createLogger } from '../../utils/logger'
-import { UserReviewItem } from '../../models/UserReviewItem'
+import { UserReviewItemDisplay } from '../../models/UserReviewItemDisplay'
 import { getUserReviews } from '../../businessLogic/Reviews'
 const logger = createLogger('getAllUserReviews')
 export const handler: APIGatewayProxyHandler = async (
@@ -19,7 +19,7 @@ export const handler: APIGatewayProxyHandler = async (
 
   logger.info('Attempting to get user reviews')
 
-  const newItems: UserReviewItem[] = await getUserReviews(jwtToken)
+  const newItems: UserReviewItemDisplay[] = await getUserReviews(jwtToken)
 
   logger.info('Items found', newItems)
   return {

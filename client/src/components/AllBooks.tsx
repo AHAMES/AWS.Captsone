@@ -14,32 +14,24 @@ import {
   Loader
 } from 'semantic-ui-react'
 
-import { createBook, getAuthorBooks, patchBook } from '../api/book-api'
+import { getAllBooks } from '../api/book-api'
 import { createReview } from '../api/reviews-api'
 import Auth from '../auth/Auth'
 import { BookItem } from '../types/BookItem'
-import { CreateBookRequest } from '../types/CreateBookRequest'
 
 interface BooksProps {
-  match: {
-    params: {
-      AuthorId: string
-    }
-  }
   auth: Auth
   history: History
 }
 
 interface BooksState {
-  authorId: string
   Books: BookItem[]
   newBookName: string
   loadingBooks: boolean
 }
 
-export class Book extends React.PureComponent<BooksProps, BooksState> {
+export class Books extends React.PureComponent<BooksProps, BooksState> {
   state: BooksState = {
-    authorId: this.props.match.params.AuthorId,
     Books: [],
     newBookName: '',
     loadingBooks: true
@@ -54,35 +46,6 @@ export class Book extends React.PureComponent<BooksProps, BooksState> {
   }
 
   onReviewssButtonClick = (bookId: string) => {
-    this.props.history.push(`/books/${bookId}/reviews`)
-  }
-
-  onBookCreate = async (event: React.ChangeEvent<HTMLButtonElement>) => {
-    try {
-      const bookDetails: CreateBookRequest = {
-        name: this.state.newBookName,
-        genre: 'Fantasy',
-        releaseDate: new Date().getFullYear().toString(),
-        authorId: this.props.match.params.AuthorId
-      }
-      console.log({
-        bookDetails
-      })
-
-      const newBook = await createBook(
-        this.props.auth.getIdToken(),
-        bookDetails
-      )
-      console.log(newBook)
-      this.setState({
-        Books: [...this.state.Books, newBook],
-        newBookName: ''
-      })
-    } catch {
-      alert('Book creation failed')
-    }
-  }
-  onBooksButtonClick = (bookId: string) => {
     this.props.history.push(`/reviews/${bookId}`)
   }
 
@@ -110,10 +73,7 @@ export class Book extends React.PureComponent<BooksProps, BooksState> {
 
   async componentDidMount() {
     try {
-      const Books = await getAuthorBooks(
-        this.props.auth.getIdToken(),
-        this.props.match.params.AuthorId
-      )
+      const Books = await getAllBooks(this.props.auth.getIdToken())
       this.setState({
         Books,
         loadingBooks: false
@@ -126,7 +86,7 @@ export class Book extends React.PureComponent<BooksProps, BooksState> {
   render() {
     return (
       <div>
-        <Header as="h1">Books by the author</Header>
+        <Header as="h1">All Books</Header>
 
         {this.renderCreateBookInput()}
 
@@ -138,21 +98,7 @@ export class Book extends React.PureComponent<BooksProps, BooksState> {
   renderCreateBookInput() {
     return (
       <Grid.Row>
-        <Grid.Column width={16}>
-          <Input
-            action={{
-              color: 'teal',
-              labelPosition: 'left',
-              icon: 'add',
-              content: 'New Book',
-              onClick: this.onBookCreate
-            }}
-            fluid
-            actionPosition="left"
-            placeholder="To kill a mocking bird..."
-            onChange={this.handleNameChange}
-          />
-        </Grid.Column>
+        <Grid.Column width={16}></Grid.Column>
         <Grid.Column width={16}>
           <Divider />
         </Grid.Column>
@@ -218,12 +164,13 @@ export class Book extends React.PureComponent<BooksProps, BooksState> {
                 </Button>
               </Grid.Column>
               <Grid.Column width={1} floated="right">
-                <Button
-                  icon
-                  color="green"
-                  onClick={() => this.onBooksButtonClick(book.bookId)}
-                >
-                  {<Icon name="book" />}
+                <Button icon color="green">
+                  {
+                    <Icon
+                      name="book"
+                      onClick={() => this.onReviewssButtonClick(book.bookId)}
+                    />
+                  }
                 </Button>
               </Grid.Column>
               {book.attachmentUrl && (

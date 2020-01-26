@@ -24,6 +24,7 @@ export class BooksAccess {
         ' attempting to create book for Author ' +
         book.authorId
     )
+    logger.info('book details:', { book })
     await this.docClient
       .put({
         TableName: this.booksTable,
@@ -107,8 +108,8 @@ export class BooksAccess {
       },
       ExpressionAttributeValues: {
         ':a': request.name,
-        ':c': request.genre,
-        ':d': request.releaseDate
+        ':c': request.releaseDate,
+        ':d': request.genre
       }
     }
     await this.docClient.update(params).promise()

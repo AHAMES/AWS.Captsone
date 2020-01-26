@@ -36,7 +36,7 @@ export async function getBookById(
   return response.data.items
 }
 
-export async function getAllBooks(idToken: string): Promise<BookItem> {
+export async function getAllBooks(idToken: string): Promise<BookItem[]> {
   console.log('Fetching Book')
 
   const response = await Axios.get(`${apiEndpoint}/books`, {
@@ -89,7 +89,7 @@ export async function getUploadUrl(
 ): Promise<string> {
   const response = await Axios.post(
     `${apiEndpoint}/commons/${bookId}/attachment`,
-    JSON.stringify({bucketId:"book"}),
+    JSON.stringify({ bucketName: 'book' }),
     {
       headers: {
         'Content-Type': 'application/json',
@@ -97,6 +97,7 @@ export async function getUploadUrl(
       }
     }
   )
+  console.log(JSON.stringify({ bucketName: 'book' }))
   return response.data.uploadUrl
 }
 

@@ -11,6 +11,9 @@
     },
     "genre": {
       "type": "string"
+    },
+    "authorId": {
+      "type": "string"
     }
   },
   "required": ["name", "releaseDate"],
