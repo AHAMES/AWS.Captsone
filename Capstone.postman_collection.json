@@ -159,7 +159,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n\t\"name\": \"Strange Case of Dr Jekyll and Mr Hyde\",\n\t\"authorId\": \"58cc315b-e72c-4a74-b40e-8a5310540178\",\n\t\"releaseDate\": \"1886\",\n\t\"genre\": \"Fantasy\"\n}"
+					"raw": "{\n\t\"name\": \"silmarillion\",\n\t\"authorId\": \"dbb42f87-96c-4dc2-a5ea-2843a86c181f\",\n\t\"releaseDate\": \"1977\",\n\t\"genre\": \"Fantasy\"\n}"
 				},
 				"url": {
 					"raw": "https://{{apiId}}.execute-api.us-east-1.amazonaws.com/dev/books",
@@ -331,11 +331,16 @@
 						"name": "Content-Type",
 						"value": "application/json",
 						"type": "text"
+					},
+					{
+						"key": "Authorization",
+						"type": "text",
+						"value": "Bearer {{authToken}}"
 					}
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n\t\"bookId\": \"58cc315b-e72c-4a74-b40e-8a5310540178\",\n\t\"reviewRate\": 4\n\t\n}",
+					"raw": "{\n\t\"bookId\": \"f9c11fea-80b7-469a-8206-267845160fda\",\n\t\"reviewRate\": 2\n\t\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -343,7 +348,7 @@
 					}
 				},
 				"url": {
-					"raw": "https://{{apiId}}.execute-api.us-east-1.amazonaws.com/dev/userReview?Authorization=Bearer {{authToken}}&Content-Type=application/json",
+					"raw": "https://{{apiId}}.execute-api.us-east-1.amazonaws.com/dev/userReview",
 					"protocol": "https",
 					"host": [
 						"{{apiId}}",
@@ -355,16 +360,172 @@
 					"path": [
 						"dev",
 						"userReview"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "getReview",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"type": "text",
+						"value": "Bearer {{authToken}}"
+					}
+				],
+				"url": {
+					"raw": "https://{{apiId}}.execute-api.us-east-1.amazonaws.com/dev/userReview/6e18a082-055f-43bb-b6f1-0736d958c05c",
+					"protocol": "https",
+					"host": [
+						"{{apiId}}",
+						"execute-api",
+						"us-east-1",
+						"amazonaws",
+						"com"
 					],
-					"query": [
-						{
-							"key": "Authorization",
-							"value": "Bearer {{authToken}}"
-						},
-						{
-							"key": "Content-Type",
-							"value": "application/json"
+					"path": [
+						"dev",
+						"userReview",
+						"6e18a082-055f-43bb-b6f1-0736d958c05c"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "deleteReview",
+			"request": {
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "Authorization",
+						"type": "text",
+						"value": "Bearer {{authToken}}"
+					}
+				],
+				"url": {
+					"raw": "https://{{apiId}}.execute-api.us-east-1.amazonaws.com/dev/userReview/6e18a082-055f-43bb-b6f1-0736d958c05c",
+					"protocol": "https",
+					"host": [
+						"{{apiId}}",
+						"execute-api",
+						"us-east-1",
+						"amazonaws",
+						"com"
+					],
+					"path": [
+						"dev",
+						"userReview",
+						"6e18a082-055f-43bb-b6f1-0736d958c05c"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "getAllBookReviews",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{authToken}}",
+						"equals": true
+					}
+				],
+				"url": {
+					"raw": "https://{{apiId}}.execute-api.us-east-1.amazonaws.com/dev/userReview/all/6e18a082-055f-43bb-b6f1-0736d958c05c",
+					"protocol": "https",
+					"host": [
+						"{{apiId}}",
+						"execute-api",
+						"us-east-1",
+						"amazonaws",
+						"com"
+					],
+					"path": [
+						"dev",
+						"userReview",
+						"all",
+						"6e18a082-055f-43bb-b6f1-0736d958c05c"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "getAllUserReviews",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{authToken}}",
+						"equals": true
+					}
+				],
+				"url": {
+					"raw": "https://{{apiId}}.execute-api.us-east-1.amazonaws.com/dev/userReview/all",
+					"protocol": "https",
+					"host": [
+						"{{apiId}}",
+						"execute-api",
+						"us-east-1",
+						"amazonaws",
+						"com"
+					],
+					"path": [
+						"dev",
+						"userReview",
+						"all"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "UpdateReview",
+			"request": {
+				"method": "PATCH",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{authToken}}",
+						"equals": true
+					},
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"reviewRate\":3\n}",
+					"options": {
+						"raw": {
+							"language": "json"
 						}
+					}
+				},
+				"url": {
+					"raw": "https://{{apiId}}.execute-api.us-east-1.amazonaws.com/dev/userReview/6e18a082-055f-43bb-b6f1-0736d958c05c",
+					"protocol": "https",
+					"host": [
+						"{{apiId}}",
+						"execute-api",
+						"us-east-1",
+						"amazonaws",
+						"com"
+					],
+					"path": [
+						"dev",
+						"userReview",
+						"6e18a082-055f-43bb-b6f1-0736d958c05c"
 					]
 				}
 			},
@@ -395,13 +556,13 @@
 	],
 	"variable": [
 		{
-			"id": "7f3f819e-4a2a-44da-803b-6544d1cdac3b",
+			"id": "719c15fc-81a4-440e-a03f-c2ae5fb6f0c7",
 			"key": "apiId",
 			"value": "",
 			"type": "string"
 		},
 		{
-			"id": "054e4819-3721-4d7e-8383-4190f720dbfd",
+			"id": "80fa3e75-fb47-45ae-ac02-e236bd09d48a",
 			"key": "authToken",
 			"value": "",
 			"type": "string"
