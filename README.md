@@ -13,6 +13,8 @@ The application stores Author items, and each Author item contains the following
 * `authorId` (string) - identification for the item
 * `attachmentUrl` (string) (optional) - a URL pointing to an image attached to a author item
 
+
+# Book items
 The application stores Book items, and each Book item contains the following fields:
 
 * `createdAt` (string) - date and time when an item was created
@@ -23,6 +25,7 @@ The application stores Book items, and each Book item contains the following fie
 * `releaseDate` (string) - publishing year for the book
 * `attachmentUrl` (string) (optional) - a URL pointing to an image attached to a book item
 
+# Review items
 The application stores Review items, and each Review item contains the following fields:
 This is where the worst shortcut was had, after I realised the problem in this design, I was already having problems uploading the changes, therefore this structure was kept as is
 * `createdAt` (string) - date and time when an item was created
