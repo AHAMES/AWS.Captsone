@@ -38,20 +38,20 @@ This is where the worst shortcut was had, after I realised the problem in this d
 
 ## frontend
 You can deploy the front end application by opening the cmd/terminal, having npm installed on your machine. run the following commands
-`
+```
 cd client
 npm i
 npm run start
-`
+```
 it will take some time.
 
 ## backend
 similarly open the cmd, if you want to run your own version, make sure you change the environment variables in serverless.yml, otherwise the application's backend is deployed. To redeploy, make sure you have the correct credentials on ~/aws/credentials, if you are using student account, make sure you copy paste it from the vocareum page. Afterwards run the following commands (assuming you are still on client).
-`
+```
 cd ../backend
 npm i
 sls deploy -v
-`
+```
 
 ## testing the application 
 For the backend, Postman collections were provided, import them on postman and go ahead to test.
